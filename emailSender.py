@@ -8,6 +8,7 @@ from jinja2 import Environment as _Environment
 from jinja2 import FileSystemLoader as _FileSystemLoader
 from jinja2 import Template as _Template
 import os as _os
+from jinja2.filters import V
 from simple_settings import settings as _settings
 import smtplib as _smtplib
 import sys as _sys
@@ -72,7 +73,7 @@ if __name__ == "__main__":
 
             csv_keys = []  # First text line of csv contains the keys used in the template
 
-            for index, line in enumerate(csv_file):
+            for line in csv_file:
                 line = line.strip()
                 if line:
                     if not csv_keys:
@@ -93,8 +94,8 @@ if __name__ == "__main__":
                     if name is None:
                         name = context["firstName"] + " " + context["lastName"]
 
-                    # Render items in context because they can be template too
-                    context = {key: _Template(context[key]).render(context) for key in context}
+                    # Render the html files
+                    context.update({key: _Template(value).render(context) for key, value in html_context.items()})
 
                     # Create the container (outer) email message.
                     outer = _MIMEMultipart()
